@@ -12,12 +12,21 @@
     <div class="container mx-auto p-4">
         <div class="grid grid-cols-3 gap-4">
             <!-- List All Posts -->
-            <div class="col-span-1">
+            <div>
                 <h2 class="text-xl font-bold">All Posts</h2>
                 <!-- Search Bar -->
                 <div class="mb-4">
                     <input type="text" id="search" class="border rounded p-2 w-full" placeholder="Search posts by title...">
                 </div>
+                <!-- Dropdown to filter number of posts -->
+<div class="mb-4">
+    <label for="post-limit" class="block text-sm font-medium text-gray-700">Posts per page</label>
+    <select id="post-limit" class="border rounded p-2">
+        <option value="10">10</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+    </select>
+</div>
                 <ul id="post-list" class="mt-4 space-y-2">
                     <!-- Post titles will be appended here by jQuery -->
                 </ul>
@@ -32,17 +41,20 @@
                 </div>
             </div>
         </div>
+
+        <div id="pagination" class="mt-4 space-x-2"></div>
     </div>
 
     <script>
         $(document).ready(function () {
             let searchQuery = '';
+            let postLimit = 10;  // Default to 10 posts
     
             // Load posts on page load
             loadPosts(1);
     
             function loadPosts(page) {
-                $.get(`/posts?page=${page}&search=${searchQuery}`, function (data) {
+                $.get(`/posts?page=${page}&limit=${postLimit}&search=${searchQuery}`, function (data) {
                     $('#post-list').empty();
                     data.data.forEach(post => {
                         $('#post-list').append(`<li class="cursor-pointer" data-id="${post.id}">${post.title}</li>`);
@@ -79,6 +91,12 @@
                 searchQuery = $(this).val();
                 loadPosts(1); // Reload posts with the search query
             });
+
+            // Change event for post limit dropdown
+        $('#post-limit').on('change', function () {
+            postLimit = $(this).val();
+            loadPosts(1);  // Reload posts with the new limit
+        });
         });
     </script>
     
